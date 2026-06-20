@@ -6,7 +6,7 @@
   <title>{% block title %}wbhist{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
+<body data-page="{% block page_type %}list{% endblock %}">
   <button type="button" class="menu-toggle" aria-label="メニュー">&#9776;</button>
   <div class="app">
     <div class="backdrop"></div>
