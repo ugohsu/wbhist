@@ -1,23 +1,13 @@
 {% extends "base.html" %}
-{% block title %}{{ heading }} - wbhist{% endblock %}
-{% block content %}
-{% if breadcrumb %}
-<p class="breadcrumb"><a href="{{ url_for('index') }}">&larr; プロジェクト一覧</a></p>
-{% endif %}
-<h1 class="page-title">{{ heading }}</h1>
-{% if items %}
-<div class="row-list">
-  {% for item in items %}
-  <a href="{{ item.url }}" class="row-item">
-    <div class="row-main">
-      <span class="row-title">{{ item.title }}</span>
-      {% if item.subtitle %}<span class="row-subtitle">{{ item.subtitle }}</span>{% endif %}
-    </div>
-    <span class="row-time">{{ item.time | jst }}</span>
-  </a>
-  {% endfor %}
-</div>
+{% import "_nav.html" as nav %}
+{% block title %}プロジェクト一覧 - wbhist{% endblock %}
+{% block sidebar %}
+{% if projects %}
+{{ nav.nav_list(projects) }}
 {% else %}
-<p class="empty">表示できる項目がありません。</p>
+<p class="nav-empty">プロジェクトがありません</p>
 {% endif %}
+{% endblock %}
+{% block content %}
+<div class="empty-state">左の一覧からプロジェクトを選んでください</div>
 {% endblock %}

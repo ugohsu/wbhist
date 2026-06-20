@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% import "_nav.html" as nav %}
+{% block title %}{{ project_name }} - wbhist{% endblock %}
+{% block sidebar %}
+<a class="side-back" href="{{ url_for('index') }}">&larr; プロジェクト一覧</a>
+<div class="side-heading" title="{{ project_path }}">{{ project_name }}</div>
+{{ nav.nav_list(sessions) }}
+{% endblock %}
+{% block content %}
+<div class="empty-state">左の一覧からセッションを選んでください</div>
+{% endblock %}

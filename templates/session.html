@@ -1,7 +1,12 @@
 {% extends "base.html" %}
+{% import "_nav.html" as nav %}
 {% block title %}{{ ai_title or "会話" }} - wbhist{% endblock %}
+{% block sidebar %}
+<a class="side-back" href="{{ url_for('index') }}">&larr; プロジェクト一覧</a>
+<div class="side-heading" title="{{ project_path }}">{{ project_name }}</div>
+{{ nav.nav_list(sessions) }}
+{% endblock %}
 {% block content %}
-<p class="breadcrumb"><a href="{{ back_url }}">&larr; {{ project_path }}</a></p>
 <h1 class="page-title">{{ ai_title or "(無題)" }}</h1>
 <div class="chat-thread">
   {% for m in messages %}

@@ -42,8 +42,14 @@ def to_jst(value):
 app.jinja_env.filters["jst"] = to_jst
 
 
-@app.route("/")
-def index():
+def project_url(project_path):
+    # project_path is always an absolute path (leading "/"); the path
+    # converter below needs the slash to come from the route's own
+    # separator, not from the value, so strip it before building the URL.
+    return url_for("project_sessions", project_path=project_path.lstrip("/"))
+
+
+def fetch_projects():
     rows = get_db().execute(
         """
         SELECT project_path, COUNT(*) AS session_count, MAX(updated_at) AS last_updated
@@ -52,49 +58,56 @@ def index():
         ORDER BY last_updated DESC
         """
     ).fetchall()
-    items = [
+    return [
         {
             "url": project_url(row["project_path"]),
             "title": row["project_path"].rsplit("/", 1)[-1],
-            "subtitle": f"{row['project_path']}（{row['session_count']} セッション）",
+            "title_attr": row["project_path"],
+            "extra": f"{row['session_count']} セッション",
             "time": row["last_updated"],
         }
         for row in rows
     ]
-    return render_template("index.html", heading="プロジェクト一覧", breadcrumb=None, items=items)
 
 
-def project_url(project_path):
-    # project_path is always an absolute path (leading "/"); the path
-    # converter below needs the slash to come from the route's own
-    # separator, not from the value, so strip it before building the URL.
-    return url_for("project_sessions", project_path=project_path.lstrip("/"))
-
-
-@app.route("/project/<path:project_path>")
-def project_sessions(project_path):
-    project_path = "/" + project_path
+def fetch_sessions(project_path, active_session_id=None):
     rows = get_db().execute(
         """
-        SELECT session_id, ai_title, started_at, updated_at
+        SELECT session_id, ai_title, updated_at
         FROM sessions
         WHERE project_path = ?
         ORDER BY updated_at DESC
         """,
         (project_path,),
     ).fetchall()
-    if not rows:
-        abort(404)
-    items = [
+    return [
         {
             "url": url_for("session_detail", session_id=row["session_id"]),
             "title": row["ai_title"] or "(無題)",
-            "subtitle": None,
             "time": row["updated_at"],
+            "active": row["session_id"] == active_session_id,
         }
         for row in rows
     ]
-    return render_template("index.html", heading=project_path, breadcrumb=project_path, items=items)
+
+
+@app.route("/")
+def index():
+    return render_template("index.html", projects=fetch_projects())
+
+
+@app.route("/project/<path:project_path>")
+def project_sessions(project_path):
+    project_path = "/" + project_path
+    sessions = fetch_sessions(project_path)
+    if not sessions:
+        abort(404)
+    return render_template(
+        "project.html",
+        project_path=project_path,
+        project_name=project_path.rsplit("/", 1)[-1],
+        sessions=sessions,
+    )
 
 
 @app.route("/session/<session_id>")
@@ -105,6 +118,7 @@ def session_detail(session_id):
     ).fetchone()
     if session_row is None:
         abort(404)
+    project_path = session_row["project_path"]
     messages = get_db().execute(
         "SELECT role, timestamp, text FROM messages WHERE session_id = ? ORDER BY id ASC",
         (session_id,),
@@ -112,8 +126,9 @@ def session_detail(session_id):
     return render_template(
         "session.html",
         ai_title=session_row["ai_title"],
-        project_path=session_row["project_path"],
-        back_url=project_url(session_row["project_path"]),
+        project_path=project_path,
+        project_name=project_path.rsplit("/", 1)[-1],
+        sessions=fetch_sessions(project_path, active_session_id=session_id),
         messages=messages,
     )
 

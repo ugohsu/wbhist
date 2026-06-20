@@ -1,0 +1,10 @@
+{% macro nav_list(items) %}
+<div class="nav-list">
+  {% for item in items %}
+  <a href="{{ item.url }}" class="nav-item{% if item.active %} active{% endif %}"{% if item.title_attr %} title="{{ item.title_attr }}"{% endif %}>
+    <span class="nav-title">{{ item.title }}</span>
+    <span class="nav-meta">{% if item.extra %}{{ item.extra }}・{% endif %}{{ item.time | jst }}</span>
+  </a>
+  {% endfor %}
+</div>
+{% endmacro %}
