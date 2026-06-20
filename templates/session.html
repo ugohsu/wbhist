@@ -1,15 +1,25 @@
 {% extends "base.html" %}
 {% block title %}{{ ai_title or "会話" }} - wbhist{% endblock %}
 {% block content %}
-<p><a href="{{ back_url }}">&laquo; {{ project_path }}</a></p>
-<h1 class="h5 mb-3">{{ ai_title or "(無題)" }}</h1>
-{% for m in messages %}
-<div class="mb-3 p-2 rounded {{ 'bg-light' if m.role == 'user' else 'bg-info-subtle' }}">
-  <div class="d-flex justify-content-between">
-    <strong>{{ "あなた" if m.role == "user" else "Claude" }}</strong>
-    <small class="text-muted">{{ m.timestamp | jst }}</small>
+<p class="breadcrumb"><a href="{{ back_url }}">&larr; {{ project_path }}</a></p>
+<h1 class="page-title">{{ ai_title or "(無題)" }}</h1>
+<div class="chat-thread">
+  {% for m in messages %}
+  <div class="msg msg-{{ m.role }}">
+    <div class="msg-time">{{ m.timestamp | jst }}</div>
+    <div class="msg-bubble">
+      <div class="msg-text">{{ m.text }}</div>
+    </div>
+    <div class="msg-actions">
+      <button type="button" class="copy-btn" title="コピー" aria-label="コピー">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+      </button>
+    </div>
   </div>
-  <div style="white-space: pre-wrap;">{{ m.text }}</div>
+  {% endfor %}
 </div>
-{% endfor %}
 {% endblock %}
