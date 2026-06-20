@@ -39,27 +39,40 @@ docker compose up -d --build
 
 ```
 wbhist/
-├── app.py                 # Flask アプリ本体
+├── app.py                  # Flask アプリ本体
 ├── Dockerfile
 ├── docker-compose.yml
 ├── requirements.txt
 ├── .env.example
-├── .env                    ← gitignore 対象
+├── .env                     ← gitignore 対象
 ├── nginx/
 │   └── nginx.conf
+├── static/
+│   ├── css/style.css        # 専用 CSS（Bootstrap は使わない）
+│   └── js/app.js            # サイドバーの差し替えナビ・コピー機能
 └── templates/
-    ├── base.html
-    ├── index.html          # プロジェクト一覧 / セッション一覧（共用）
-    └── session.html        # 会話表示
+    ├── base.html            # サイドバー＋本文の2カラムシェル
+    ├── _nav.html             # サイドバーのリスト項目を描画する Jinja マクロ
+    ├── index.html            # ルート（プロジェクト一覧。本文は未選択時のプレースホルダ）
+    ├── project.html          # プロジェクト選択時（セッション一覧。本文はプレースホルダ）
+    └── session.html          # セッション選択時（会話表示）
 ```
 
 ## 機能（Phase 1・実装済み）
 
-- `sessions.db` の `sessions` テーブルを `project_path` でグルーピングしたプロジェクト一覧
-- プロジェクトを選ぶとセッション一覧（`ai_title` ・更新日時）を表示
-- セッションを選ぶと会話本文（user / assistant）を表示
+- `sessions.db` の `sessions` テーブルを `project_path` でグルーピングしたプロジェクト一覧を
+  **サイドバー**に表示（Gemini のチャット履歴のような見た目）
+- プロジェクトを選ぶとサイドバーがセッション一覧（`ai_title` ・更新日時）に切り替わる
+- セッションを選ぶと本文に会話（user / assistant）を表示。user は右寄せの丸いバブル、
+  assistant はバブルなしのプレーンテキスト
+- サイドバー上の移動は `fetch` で `.side-nav` だけを差し替える方式で、**新しいセッションを
+  実際に選ぶまで本文の会話表示は維持される**（フルページ遷移ではないので
+  `history.pushState` で URL を同期。JS 無効時は通常のページ遷移にフォールバック）
+- 各メッセージにマウスを乗せるとコピーアイコンが表れ、本文をクリップボードにコピーできる
+  （`navigator.clipboard` は https/localhost でないと使えないため、http アクセス向けに
+  `document.execCommand('copy')` フォールバックを実装済み）
 - 表示する時刻はすべて JST（UTC+9）に変換（DB は UTC のまま。変換はテンプレート側のみ）
-- Bootstrap によるモバイル向けレイアウト
+- スマホ幅ではサイドバーが既定で隠れ、左上のハンバーガーボタンで開閉する
 - 認証なし（VPN 内からしかアクセスできない前提のため）
 
 ## Phase 2（未実装）
