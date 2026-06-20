@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ ai_title or "会話" }} - wbhist{% endblock %}
+{% block content %}
+<p><a href="{{ back_url }}">&laquo; {{ project_path }}</a></p>
+<h1 class="h5 mb-3">{{ ai_title or "(無題)" }}</h1>
+{% for m in messages %}
+<div class="mb-3 p-2 rounded {{ 'bg-light' if m.role == 'user' else 'bg-info-subtle' }}">
+  <div class="d-flex justify-content-between">
+    <strong>{{ "あなた" if m.role == "user" else "Claude" }}</strong>
+    <small class="text-muted">{{ m.timestamp | jst }}</small>
+  </div>
+  <div style="white-space: pre-wrap;">{{ m.text }}</div>
+</div>
+{% endfor %}
+{% endblock %}

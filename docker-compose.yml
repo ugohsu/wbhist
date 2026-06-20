@@ -1,0 +1,22 @@
+services:
+  app:
+    build: .
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    restart: unless-stopped
+    volumes:
+      - ${SQLITE_DIR}:/data:ro            # workbox の sync スクリプトが書き出す sessions.db
+      # Phase 2: git diff 用（git 管理後に追加）
+      # - ${WORKSPACE_DIR}:/workspace-data:ro
+    env_file: .env
+    expose:
+      - "8000"
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "5001:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
