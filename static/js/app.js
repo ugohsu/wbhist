@@ -51,11 +51,13 @@ async function applyPage(url, push) {
       contentInner.innerHTML = newContent.innerHTML;
       document.querySelector(".main").scrollTo({ top: 0 });
     }
+    // Only a session (conversation) pick should auto-close the sidebar on
+    // mobile; project/list navigation should leave it open for browsing.
+    app.classList.remove("sidebar-open");
   }
 
   document.title = doc.title;
   if (push) history.pushState(null, "", url);
-  app.classList.remove("sidebar-open");
 }
 
 document.addEventListener("click", (event) => {
