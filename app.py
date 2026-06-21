@@ -1,14 +1,52 @@
 import os
+import secrets
 import sqlite3
 from datetime import datetime, timedelta, timezone
 
-from flask import Flask, abort, g, render_template, url_for
+from flask import Flask, abort, g, redirect, render_template, request, session, url_for
 
 DB_PATH = os.environ.get("DB_PATH", "/data/sessions.db")
+APP_PASSWORD = os.environ.get("APP_PASSWORD")
 JST = timezone(timedelta(hours=9))
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-insecure-key-for-local-testing")
+app.permanent_session_lifetime = timedelta(days=30)
+
+
+@app.before_request
+def require_login():
+    if request.endpoint in ("login", "static") or session.get("authenticated"):
+        return
+    return redirect(url_for("login", next=request.path))
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if session.get("authenticated") and request.method == "GET":
+        return redirect(url_for("index"))
+
+    # Only allow redirecting back to a same-site path after login, never an
+    # absolute/external URL, to avoid an open-redirect via the "next" param.
+    next_path = request.args.get("next", "")
+    if not next_path.startswith("/") or next_path.startswith("//"):
+        next_path = url_for("index")
+
+    error = None
+    if request.method == "POST":
+        password = request.form.get("password", "")
+        if APP_PASSWORD and secrets.compare_digest(password, APP_PASSWORD):
+            session.permanent = True
+            session["authenticated"] = True
+            return redirect(next_path)
+        error = "パスワードが正しくありません"
+    return render_template("login.html", error=error, next=next_path)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
 
 
 def get_db():

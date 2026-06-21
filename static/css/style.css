@@ -72,6 +72,20 @@ a {
   padding: 4px 10px 24px;
 }
 
+.side-logout {
+  display: block;
+  flex: 0 0 auto;
+  padding: 12px 18px;
+  font-size: 13px;
+  color: var(--sidebar-muted);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.side-logout:hover {
+  background: var(--row-hover);
+  color: var(--fg);
+}
+
 .side-back {
   display: block;
   padding: 9px 12px;
@@ -318,4 +332,60 @@ a {
   .msg-user .msg-bubble {
     max-width: 88%;
   }
+}
+
+/* --- login --- */
+
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--sidebar-bg);
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 16px;
+  padding: 32px 28px;
+  background: var(--bg);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.login-brand {
+  justify-content: center;
+  padding: 0 0 6px;
+}
+
+.login-error {
+  margin: 0;
+  font-size: 13px;
+  color: #c5221f;
+}
+
+.login-card input[type="password"] {
+  font: inherit;
+  padding: 10px 12px;
+  border: 1px solid #dcdfe4;
+  border-radius: 8px;
+}
+
+.login-card button {
+  font: inherit;
+  font-weight: 500;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 20px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.login-card button:hover {
+  background: #0a4cb8;
 }

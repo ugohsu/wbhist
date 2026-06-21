@@ -20,18 +20,20 @@
 git clone git@github.com:ugohsu/wbhist && cd wbhist
 
 cp .env.example .env
-# SECRET_KEY・APP_UID・APP_GID・SQLITE_DIR を実際の値に編集
+# SECRET_KEY・APP_PASSWORD・APP_UID・APP_GID・SQLITE_DIR を実際の値に編集
 
 docker compose up -d --build
 ```
 
-ブラウザで `http://<server-ip>:5001` を開く（VPN 内からのみアクセス可能・認証なし）。
+ブラウザで `http://<server-ip>:5001` を開く（VPN 内からのみアクセス可能。
+`APP_PASSWORD` に設定した共有パスワードでログインする）。
 
 ## 環境変数（`.env`）
 
 | 変数 | 説明 |
 |---|---|
 | `SECRET_KEY` | Flask セッション署名キー。`python3 -c "import secrets; print(secrets.token_hex(32))"` で生成 |
+| `APP_PASSWORD` | ログイン画面で要求する共有パスワード。未設定だとログインできなくなるので必ず設定する |
 | `APP_UID` / `APP_GID` | コンテナが作るファイルの所有者をホストユーザーに合わせる（確認: `id -u` / `id -g`） |
 | `SQLITE_DIR` | `sessions.db` が置かれているホスト上のディレクトリ（`workbox` の sync スクリプトの出力先。例: `~/claude-logs`） |
 
@@ -53,6 +55,7 @@ wbhist/
 └── templates/
     ├── base.html            # サイドバー＋本文の2カラムシェル
     ├── _nav.html             # サイドバーのリスト項目を描画する Jinja マクロ
+    ├── login.html            # ログイン画面（共有パスワード入力）
     ├── index.html            # ルート（プロジェクト一覧。本文は未選択時のプレースホルダ）
     ├── project.html          # プロジェクト選択時（セッション一覧。本文はプレースホルダ）
     └── session.html          # セッション選択時（会話表示）
@@ -73,7 +76,11 @@ wbhist/
   `document.execCommand('copy')` フォールバックを実装済み）
 - 表示する時刻はすべて JST（UTC+9）に変換（DB は UTC のまま。変換はテンプレート側のみ）
 - スマホ幅ではサイドバーが既定で隠れ、左上のハンバーガーボタンで開閉する
-- 認証なし（VPN 内からしかアクセスできない前提のため）
+- 共有パスワードによるログイン認証（`.env` の `APP_PASSWORD` と一致するパスワードを
+  入力するとセッションが発行され、以後30日間は再ログイン不要。サイドバー下部の
+  「ログアウト」でセッションを破棄できる）。VPN 内からのみアクセス可能という
+  前提に加えて、同一LAN/VPN上の他の利用者からの不用意なアクセスを防ぐための
+  簡易的なものであり、ユーザーごとの権限分離は行わない
 
 ## Phase 2（未実装）
 

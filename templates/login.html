@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ログイン - wbhist</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-page">
+  <form class="login-card" method="post" action="{{ url_for('login', next=next) }}">
+    <div class="brand login-brand">
+      <span class="brand-dot"></span> wbhist
+    </div>
+    {% if error %}
+    <p class="login-error">{{ error }}</p>
+    {% endif %}
+    <input type="password" name="password" placeholder="パスワード" autofocus required>
+    <button type="submit">ログイン</button>
+  </form>
+</body>
+</html>
