@@ -11,6 +11,29 @@
 <h1 class="page-title">{{ ai_title or "(無題)" }}</h1>
 <div class="chat-thread">
   {% for m in messages %}
+  {% if m.role == 'ask_user_question' %}
+  {% set q = m.text | fromjson %}
+  <div class="msg msg-ask-user-question">
+    <div class="msg-time">{{ m.timestamp | jst }}</div>
+    <div class="question-card">
+      {% for item in q.questions %}
+      <div class="question-item">
+        <div class="question-header">{{ item.header }}</div>
+        <p class="question-text">{{ item.question }}</p>
+        <ul class="question-options">
+          {% for opt in item.options %}
+          <li>
+            <span class="option-label">{{ opt.label }}</span>
+            {% if opt.description %}<span class="option-desc">{{ opt.description }}</span>{% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+      <p class="question-result">{{ q.result }}</p>
+    </div>
+  </div>
+  {% else %}
   <div class="msg msg-{{ m.role }}">
     <div class="msg-time">{{ m.timestamp | jst }}</div>
     <div class="msg-bubble">
@@ -26,6 +49,7 @@
       </button>
     </div>
   </div>
+  {% endif %}
   {% endfor %}
 </div>
 {% endblock %}

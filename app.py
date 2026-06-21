@@ -1,3 +1,4 @@
+import json
 import os
 import secrets
 import sqlite3
@@ -78,6 +79,7 @@ def to_jst(value):
 
 
 app.jinja_env.filters["jst"] = to_jst
+app.jinja_env.filters["fromjson"] = json.loads
 
 
 def project_url(project_path):
