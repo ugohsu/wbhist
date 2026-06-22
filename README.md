@@ -6,8 +6,8 @@
 - Flask（`app.py`）+ gunicorn + nginx（Docker Compose 構成）
 - `sessions.db`（SQLite）を **read-only** でマウントして参照するだけで、
   `workbox` コンテナの内部（`~/.claude`）には一切アクセスしない
-- 設計の背景（同期方式・DB スキーマ・運用方針）は `workbox` 側の設定リポジトリ
-  （`hp-mini_config`）の `homeserver-webapp-spec.md` を参照（別リポジトリのため本リポジトリには含まない）
+- `sessions.db` のスキーマ・同期方式は `workbox` コンテナ側（別リポジトリ `hp-mini_config/workbox_setup/`）の
+  `sync_to_sqlite.py` が定義・管理する。本アプリは read-only で参照するのみで、スキーマの変更権限は持たない
 
 ## 前提
 
@@ -88,8 +88,15 @@ git は使わず、Claude Code 自身の `Edit` tool_use（`old_string`/`new_str
 diff の元データとして表示する（`Write` 等は対象外）。各会話ターンの本文に
 テキストがある場合はコピーアイコンの隣、無い場合（Edit のみのターン）は
 そのターンの行に、diff 表示用のアイコンが表れる。クリックでそのターンの
-`file_edits`（`sessions.db`）を diff として展開表示する。決定の経緯・スキーマは
-`homeserver-webapp-spec.md` の「Phase 2」を参照。
+`file_edits`（`sessions.db`）を diff として展開表示する。
+
+採用までの経緯：git 管理は `.git` の入れ子問題（サブディレクトリが独立した
+`.git` を持つと embedded repository として扱われ diff に出てこない）のため
+不採用。`Write` 用のベースライン管理（直前の内容を別テーブルで保持し、初回は
+起動時バックフィルが必要）も、得られる効果に対して複雑さ・将来の破損リスクが
+大きいため見送り。`Edit` だけは、`old_string` が実際のファイル内容と一致しないと
+失敗する仕様上、`old_string`/`new_string` の組自体が変更の正確な diff になっている
+ため、ベースライン管理なしで採用できた。
 
 ## Docker なしでのローカル動作確認
 
