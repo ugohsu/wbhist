@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% import "_nav.html" as nav %}
+{% import "_repo_link.html" as repo %}
 {% block title %}{{ ai_title or "会話" }} - wbhist{% endblock %}
 {% block page_type %}session{% endblock %}
 {% block sidebar %}
 <a class="side-back" href="{{ url_for('index') }}">&larr; プロジェクト一覧</a>
 <div class="side-heading" title="{{ project_path }}">{{ project_name }}</div>
+{{ repo.repo_link_widget(project_path, repo_link, request.path) }}
 {{ nav.nav_list(sessions) }}
 {% endblock %}
 {% block content %}
@@ -66,7 +68,7 @@
     <div class="diff-panel" hidden>
       {% for edit in edits %}
       <div class="diff-card">
-        <div class="diff-file">{{ edit.file_path }}{% if edit.replace_all %} <span class="diff-flag">(全置換)</span>{% endif %}</div>
+        <div class="diff-file">{% if edit.github_url %}<a href="{{ edit.github_url }}" target="_blank" rel="noopener noreferrer" class="diff-file-link">{{ edit.file_path }}</a>{% else %}{{ edit.file_path }}{% endif %}{% if edit.replace_all %} <span class="diff-flag">(全置換)</span>{% endif %}</div>
         <div class="diff-body">{% for tag, text in edit.lines %}<span class="diff-line diff-{{ tag }}">{{ text }}</span>{% endfor %}</div>
       </div>
       {% endfor %}

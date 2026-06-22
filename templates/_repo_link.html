@@ -1,0 +1,22 @@
+{% macro repo_link_widget(project_path, repo_link, next) %}
+<div class="repo-link">
+  {% for message in get_flashed_messages() %}
+  <p class="repo-link-error">{{ message }}</p>
+  {% endfor %}
+  <form method="post" action="{{ url_for('repo_link_save', project_path=project_path.lstrip('/')) }}" class="repo-link-form">
+    <input type="hidden" name="next" value="{{ next }}">
+    <span class="repo-link-label">GitHub連携（任意）</span>
+    <input type="text" name="repo_url" placeholder="https://github.com/org/repo"
+           value="{{ repo_link.repo_url if repo_link else '' }}">
+    <input type="text" name="branch" placeholder="ブランチ（既定: main）"
+           value="{{ repo_link.branch if repo_link else '' }}">
+    <button type="submit">保存</button>
+  </form>
+  {% if repo_link %}
+  <form method="post" action="{{ url_for('repo_link_delete', project_path=project_path.lstrip('/')) }}" class="repo-link-remove-form">
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="repo-link-remove">連携を解除</button>
+  </form>
+  {% endif %}
+</div>
+{% endmacro %}

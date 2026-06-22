@@ -117,6 +117,81 @@ a {
   color: var(--sidebar-muted);
 }
 
+/* --- repo link (per-project GitHub連携) --- */
+
+.repo-link {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 4px 10px;
+  padding: 10px 10px 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.035);
+}
+
+.repo-link-error {
+  margin: 0;
+  font-size: 12px;
+  color: #c5221f;
+}
+
+.repo-link-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.repo-link-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--sidebar-muted);
+}
+
+.repo-link input[type="text"] {
+  font: inherit;
+  font-size: 12.5px;
+  padding: 6px 8px;
+  border: 1px solid #dcdfe4;
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+  width: 100%;
+}
+
+.repo-link-form button,
+.repo-link-remove {
+  align-self: flex-start;
+  font: inherit;
+  font-size: 12px;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 14px;
+  background: var(--active-bg);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.repo-link-form button:hover,
+.repo-link-remove:hover {
+  background: #c2d8fb;
+}
+
+.repo-link-remove-form {
+  margin: 0;
+}
+
+.repo-link-remove {
+  background: transparent;
+  color: var(--sidebar-muted);
+  padding: 4px 4px;
+}
+
+.repo-link-remove:hover {
+  color: #c5221f;
+  background: transparent;
+  text-decoration: underline;
+}
+
 /* --- nav list (used for both project list and session list in the sidebar) --- */
 
 .nav-list {
@@ -325,6 +400,15 @@ a {
 .diff-flag {
   color: var(--muted);
   font-weight: 400;
+}
+
+.diff-file-link {
+  color: var(--sidebar-fg);
+}
+
+.diff-file-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 .diff-body {

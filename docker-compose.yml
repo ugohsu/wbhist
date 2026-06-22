@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     volumes:
       - ${SQLITE_DIR}:/data:ro            # workbox の sync スクリプトが書き出す sessions.db
+      - ${APP_DATA_DIR}:/app-data         # wbhist 自身の設定（GitHubリポジトリ連携など）。書き込み可
       # Phase 2: git diff 用（git 管理後に追加）
       # - ${WORKSPACE_DIR}:/workspace-data:ro
     env_file: .env
