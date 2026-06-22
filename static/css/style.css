@@ -275,6 +275,90 @@ a {
   color: var(--accent);
 }
 
+.diff-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.diff-btn:hover {
+  background: var(--row-hover);
+  color: var(--fg);
+}
+
+.diff-btn.active {
+  background: var(--active-bg);
+  color: var(--accent);
+}
+
+/* --- diff panel (Edit tool_use の old_string/new_string を表示) --- */
+
+.diff-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.diff-card {
+  border: 1px solid #dcdfe4;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.diff-file {
+  padding: 8px 12px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 12px;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-fg);
+  word-break: break-all;
+}
+
+.diff-flag {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.diff-body {
+  overflow-x: auto;
+  padding: 6px 0;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.diff-line {
+  display: block;
+  padding: 0 12px;
+  white-space: pre;
+}
+
+.diff-add {
+  background: #e6ffed;
+  color: #22863a;
+}
+
+.diff-del {
+  background: #ffeef0;
+  color: #cb2431;
+}
+
+.diff-hunk {
+  color: var(--muted);
+}
+
+.diff-ctx {
+  color: var(--fg);
+}
+
 /* --- ask user question (decision card) --- */
 
 .question-card {

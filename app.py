@@ -1,3 +1,4 @@
+import difflib
 import json
 import os
 import secrets
@@ -150,6 +151,44 @@ def project_sessions(project_path):
     )
 
 
+def build_diff_lines(old_text, new_text):
+    # Edit の old_string/new_string が変更の正確な記録になっているので、
+    # ファイル全体を知らなくてもこの2文字列だけで diff を組み立てられる
+    # （ベースライン管理が不要な理由。homeserver-webapp-spec.md の Phase 2 節参照）。
+    diff = difflib.unified_diff(old_text.splitlines(), new_text.splitlines(), lineterm="", n=2)
+    lines = []
+    for line in diff:
+        if line.startswith("+++") or line.startswith("---"):
+            continue
+        if line.startswith("@@"):
+            lines.append(("hunk", line))
+        elif line.startswith("+"):
+            lines.append(("add", line[1:]))
+        elif line.startswith("-"):
+            lines.append(("del", line[1:]))
+        else:
+            lines.append(("ctx", line[1:]))
+    return lines
+
+
+def fetch_edits_by_timestamp(session_id):
+    rows = get_db().execute(
+        "SELECT timestamp, file_path, old_string, new_string, replace_all "
+        "FROM file_edits WHERE session_id = ? ORDER BY id ASC",
+        (session_id,),
+    ).fetchall()
+    grouped = {}
+    for row in rows:
+        grouped.setdefault(row["timestamp"], []).append(
+            {
+                "file_path": row["file_path"],
+                "replace_all": bool(row["replace_all"]),
+                "lines": build_diff_lines(row["old_string"], row["new_string"]),
+            }
+        )
+    return grouped
+
+
 @app.route("/session/<session_id>")
 def session_detail(session_id):
     session_row = get_db().execute(
@@ -170,6 +209,7 @@ def session_detail(session_id):
         project_name=project_path.rsplit("/", 1)[-1],
         sessions=fetch_sessions(project_path, active_session_id=session_id),
         messages=messages,
+        edits_by_timestamp=fetch_edits_by_timestamp(session_id),
     )
 
 

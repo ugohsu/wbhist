@@ -34,12 +34,16 @@
     </div>
   </div>
   {% else %}
+  {% set edits = edits_by_timestamp.get(m.timestamp) %}
   <div class="msg msg-{{ m.role }}">
     <div class="msg-time">{{ m.timestamp | jst }}</div>
+    {% if m.text %}
     <div class="msg-bubble">
       <div class="msg-text">{{ m.text }}</div>
     </div>
+    {% endif %}
     <div class="msg-actions">
+      {% if m.text %}
       <button type="button" class="copy-btn" title="コピー" aria-label="コピー">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -47,7 +51,27 @@
           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
         </svg>
       </button>
+      {% endif %}
+      {% if edits %}
+      <button type="button" class="diff-btn" title="編集内容を表示" aria-label="編集内容を表示">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+      </button>
+      {% endif %}
     </div>
+    {% if edits %}
+    <div class="diff-panel" hidden>
+      {% for edit in edits %}
+      <div class="diff-card">
+        <div class="diff-file">{{ edit.file_path }}{% if edit.replace_all %} <span class="diff-flag">(全置換)</span>{% endif %}</div>
+        <div class="diff-body">{% for tag, text in edit.lines %}<span class="diff-line diff-{{ tag }}">{{ text }}</span>{% endfor %}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
   </div>
   {% endif %}
   {% endfor %}

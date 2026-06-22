@@ -71,6 +71,16 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  const diffButton = event.target.closest(".diff-btn");
+  if (diffButton) {
+    const panel = diffButton.closest(".msg").querySelector(".diff-panel");
+    if (panel) {
+      panel.hidden = !panel.hidden;
+      diffButton.classList.toggle("active", !panel.hidden);
+    }
+    return;
+  }
+
   if (event.target.closest(".menu-toggle")) {
     app.classList.toggle("sidebar-open");
     return;

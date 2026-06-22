@@ -82,9 +82,13 @@ wbhist/
   前提に加えて、同一LAN/VPN上の他の利用者からの不用意なアクセスを防ぐための
   簡易的なものであり、ユーザーごとの権限分離は行わない
 
-## Phase 2（未実装）
+## Phase 2（実装済み）
 
-ファイルの変更履歴（`git log` / `git diff`）を表示する diff ビューア。詳細は
+git は使わず、Claude Code 自身の `Edit` tool_use（`old_string`/`new_string`）を
+diff の元データとして表示する（`Write` 等は対象外）。各会話ターンの本文に
+テキストがある場合はコピーアイコンの隣、無い場合（Edit のみのターン）は
+そのターンの行に、diff 表示用のアイコンが表れる。クリックでそのターンの
+`file_edits`（`sessions.db`）を diff として展開表示する。決定の経緯・スキーマは
 `homeserver-webapp-spec.md` の「Phase 2」を参照。
 
 ## Docker なしでのローカル動作確認
